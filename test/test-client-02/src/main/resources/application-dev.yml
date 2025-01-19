@@ -1,0 +1,21 @@
+server:
+  port: 8002
+  servlet:
+    context-path: /client2
+
+security:
+  oauth2:
+    client:
+      client-id: client2
+      client-secret: client2_secret
+      preEstablishedRedirectUri:
+      access-token-uri: http://sso.xfg.com/auth/oauth/token
+      user-authorization-uri: http://sso.xfg.com/auth/oauth/authorize
+    resource:
+      user-info-uri: http://sso.xfg.com/auth/user
+      token-info-uri: http://sso.xfg.com/auth/oauth/check_token
+
+logging:
+  level:
+    root: debug
+  config: classpath:logback-spring.xml

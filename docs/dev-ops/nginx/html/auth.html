@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OAuth2 SSO Login Page</title>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #74ABE2, #5563DE);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .login-container {
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            width: 320px;
+            text-align: center;
+        }
+        .login-container h2 {
+            margin-bottom: 30px;
+            font-weight: 500;
+            color: #333;
+        }
+        .login-container input[type="text"],
+        .login-container input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0 20px 0;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-sizing: border-box;
+            transition: border-color 0.3s;
+        }
+        .login-container input[type="text"]:focus,
+        .login-container input[type="password"]:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+        .login-container button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 8px;
+            background-color: #5563DE;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+        .login-container button:hover {
+            background-color: #3a49c9;
+            transform: translateY(-2px);
+        }
+        .login-container .register-btn {
+            background-color: #FF6B6B;
+        }
+        .login-container .register-btn:hover {
+            background-color: #e55d5d;
+        }
+        .login-container p {
+            margin-top: 20px;
+            color: #777;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="login-container">
+    <h2>登录</h2>
+    <input type="text" id="username" placeholder="用户名" required>
+    <input type="password" id="password" placeholder="密码" required>
+    <button id="login-btn">登录</button>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+    const base = 'http://sso.xfg.com'; // 设置你的基础URL
+
+    document.getElementById('login-btn').addEventListener('click', function() {
+        const loginForm = {
+            username: document.getElementById('username').value,
+            password: document.getElementById('password').value
+        };
+
+        postRequest('/auth/login', loginForm).then(resp => {
+            if (resp.data.code === 0) {
+                const pageUrl = window.location.href;
+                const param = pageUrl.split('?')[1];
+                window.location.href = '/auth/oauth/authorize?' + param;
+            } else {
+                console.log('登录失败：' + resp.data.msg);
+            }
+        });
+    });
+
+    function postRequest(url, params) {
+        return axios({
+            method: 'post',
+            url: `${base}${url}`,
+            data: params,
+            transformRequest: [function (data) {
+                let ret = '';
+                for (let it in data) {
+                    ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&';
+                }
+                return ret;
+            }],
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        });
+    }
+</script>
+</body>
+</html>

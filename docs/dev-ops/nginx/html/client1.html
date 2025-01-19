@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spring OAuth2 SSO - 商城</title>
+</head>
+<body>
+<div>
+    <button id="testButton">开始下单</button>
+    <p id="result">下单结果：</p>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+
+const base = 'http://client1.xfg.com';
+function getRequest(url) {
+    return axios.get(`${base}${url}`);
+}
+
+document.getElementById('testButton').addEventListener('click', function() {
+    getRequest('/client1/create_pay_order').then(resp => {
+        const resultElement = document.getElementById('result');
+        if (resp.data.code === 0) {
+            const linkHtml = "&nbsp;&nbsp;<a href='http://client2.xfg.com/client2Page/#/home'>领红包</a>";
+            resultElement.innerHTML = resp.data.data + linkHtml;
+        } else if (resp.data.code === 800) {
+            window.location.href = resp.data.data;
+        } else {
+            console.log('失败：' + resp.data);
+        }
+    }).catch(error => {
+        console.log('请求失败：', error);
+    });
+});
+
+</script>
+</body>
+</html>
